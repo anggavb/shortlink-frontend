@@ -1,6 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-    --font-sans: 'Inter', sans-serif;
+  --font-sans: 'Inter', sans-serif;
+}
+
+@utility form-error {
+  @apply text-xs font-medium leading-5 text-red-600;
+}
+
+@utility primary-button {
+  @apply inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-transparent bg-blue-600 px-4 text-base font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+@utility text-link {
+  @apply font-medium text-blue-700 transition hover:text-blue-800 hover:underline;
 }
