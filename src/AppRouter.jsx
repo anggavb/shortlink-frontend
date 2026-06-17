@@ -11,7 +11,7 @@ function AppRouter() {
   return (
     <Routes>
       <Route index element={<LandingPage />} />
-      <Route path="auth">
+      <Route path="auth" element={<ProtectedRoute guestOnly />}>
         <Route index element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
       </Route>
