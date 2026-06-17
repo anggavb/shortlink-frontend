@@ -1,16 +1,25 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
-import AuthCard from "../../components/auth/AuthCard.jsx";
-import AuthLayout from "../../components/auth/AuthLayout.jsx";
-import FormField from "../../components/ui/FormField.jsx";
-import Button from "../../components/ui/Button.jsx";
+import { useDispatch, useSelector } from "react-redux";
+import { clearRegisterState, registerUser } from "@/redux/auth/authSlice";
+import { notify } from "@/utils/toast";
+import AuthCard from "@/components/auth/AuthCard.jsx";
+import AuthLayout from "@/components/auth/AuthLayout.jsx";
+import FormField from "@/components/ui/FormField.jsx";
+import Button from "@/components/ui/Button.jsx";
 
 function RegisterPage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isRegistering = useSelector(
+    (state) => state.auth.registerStatus === "loading",
+  );
   const {
     formState: { errors },
     getValues,
     handleSubmit,
     register,
+    setError,
   } = useForm({
     defaultValues: {
       email: "",
@@ -19,8 +28,31 @@ function RegisterPage() {
     },
   });
 
-  const onSubmit = (values) => {
-    console.log("Register payload", values);
+  const onSubmit = async ({ email, password }) => {
+    try {
+      const response = await dispatch(
+        registerUser({ email, password }),
+      ).unwrap();
+      notify.success(response?.message || "Register berhasil. Silakan login.");
+      dispatch(clearRegisterState());
+      navigate("/auth");
+    } catch (error) {
+      if (error?.errors?.email) {
+        setError("email", {
+          type: "server",
+          message: error.errors.email,
+        });
+      }
+
+      if (error?.errors?.password) {
+        setError("password", {
+          type: "server",
+          message: error.errors.password,
+        });
+      }
+
+      notify.error(error?.message || "Registration failed. Please try again.");
+    }
   };
 
   return (
@@ -60,8 +92,8 @@ function RegisterPage() {
             registration={register("password", {
               required: "Password is required.",
               minLength: {
-                value: 6,
-                message: "Password must be at least 6 characters.",
+                value: 8,
+                message: "Password must be at least 8 characters.",
               },
             })}
           />
@@ -80,8 +112,9 @@ function RegisterPage() {
             })}
           />
 
-          <Button type="submit">
-            Sign Up <span aria-hidden="true">&rarr;</span>
+          <Button type="submit" disabled={isRegistering}>
+            {isRegistering ? "Signing Up..." : "Sign Up"}{" "}
+            <span aria-hidden="true">&rarr;</span>
           </Button>
         </form>
 
