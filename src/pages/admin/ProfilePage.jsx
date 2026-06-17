@@ -7,13 +7,13 @@ import {
   FiShield,
   FiUser,
 } from "react-icons/fi";
-import AdminNavbar from "@/components/layout/AdminNavbar.jsx";
+import Navbar from "@/components/layout/Navbar.jsx";
 import AppFooter from "@/components/layout/AppFooter.jsx";
 
 function ProfilePage() {
   return (
     <div className="flex min-h-svh flex-col bg-slate-50 text-slate-900">
-      <AdminNavbar />
+      <Navbar isLoggedIn={true} />
 
       <main className="flex-1 px-5 py-16 sm:px-7 lg:px-8">
         <div className="mx-auto w-full max-w-168">
@@ -34,7 +34,10 @@ function ProfilePage() {
             <div className="mt-14 flex flex-col gap-6 sm:flex-row sm:items-center">
               <div className="relative size-24 shrink-0 rounded-lg bg-slate-900 shadow-[0_14px_24px_rgba(15,23,42,0.18)]">
                 <div className="grid size-full place-items-center rounded-lg bg-[radial-gradient(circle_at_50%_18%,#f0b493_0_18%,#d9856d_19%_25%,#1f2937_26%_100%)]">
-                  <FiUser className="mt-5 text-5xl text-slate-100" aria-hidden="true" />
+                  <FiUser
+                    className="mt-5 text-5xl text-slate-100"
+                    aria-hidden="true"
+                  />
                 </div>
                 <button
                   type="button"
@@ -72,7 +75,9 @@ function ProfilePage() {
                   <p className="text-xs font-extrabold tracking-[0.18em] text-blue-100 uppercase">
                     Active Assets
                   </p>
-                  <p className="mt-1 text-2xl leading-none font-extrabold">12</p>
+                  <p className="mt-1 text-2xl leading-none font-extrabold">
+                    12
+                  </p>
                 </div>
               </div>
               <a
