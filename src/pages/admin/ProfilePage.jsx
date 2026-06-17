@@ -16,7 +16,7 @@ function ProfilePage() {
       <Navbar />
 
       <main className="flex-1 px-5 py-16 sm:px-7 lg:px-8">
-        <div className="mx-auto w-full max-w-168">
+        <div className="mx-auto w-full max-w-2xl">
           <p className="mb-7 text-[0.6875rem] font-bold tracking-[0.24em] text-slate-500 uppercase">
             Account Management
           </p>
