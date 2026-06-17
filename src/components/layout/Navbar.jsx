@@ -1,9 +1,10 @@
 import { NavLink, useLocation, useNavigate } from "react-router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FiPlus, FiUser } from "react-icons/fi";
 import { logoutUser } from "@/redux/auth/authSlice";
 import { notify } from "@/utils/toast";
 import BrandLogo from "@/components/ui/BrandLogo.jsx";
+import { selectIsAuthenticated } from "@/redux/auth/authSlice";
 
 const navigationItems = [
   { label: "Dashboard", to: "/admin" },
@@ -11,11 +12,12 @@ const navigationItems = [
   { label: "Links", to: "#" },
 ];
 
-function Navbar({ isLoggedIn }) {
+function Navbar() {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname.replace(/\/+$/, "") || "/";
+  const isLoggedIn = useSelector(selectIsAuthenticated);
   const showCreateLink = isLoggedIn && currentPath === "/admin";
 
   const handleLogout = async () => {

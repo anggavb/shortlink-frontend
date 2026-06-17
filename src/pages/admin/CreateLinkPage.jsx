@@ -24,7 +24,7 @@ function CreateLinkPage() {
 
   return (
     <div className="flex min-h-svh flex-col bg-slate-50 text-slate-900">
-      <Navbar isLoggedIn={true} />
+      <Navbar />
 
       <main className="flex-1 px-5 py-16 sm:px-7 lg:px-8">
         <div className="mx-auto w-full max-w-2xl">
