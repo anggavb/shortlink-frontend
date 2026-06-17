@@ -4,6 +4,7 @@ import LoginPage from "@/pages/auth/LoginPage.jsx";
 import RegisterPage from "@/pages/auth/RegisterPage.jsx";
 import DashboardPage from "@/pages/admin/DashboardPage.jsx";
 import ProfilePage from "@/pages/admin/ProfilePage.jsx";
+import CreateLinkPage from "@/pages/admin/CreateLinkPage.jsx";
 
 function AppRouter() {
   return (
@@ -15,6 +16,7 @@ function AppRouter() {
       </Route>
       <Route path="admin">
         <Route index element={<DashboardPage />} />
+        <Route path="create" element={<CreateLinkPage />} />
         <Route path="profile" element={<ProfilePage />} />
       </Route>
     </Routes>

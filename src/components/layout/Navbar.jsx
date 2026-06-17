@@ -1,4 +1,4 @@
-import { NavLink } from "react-router";
+import { NavLink, useLocation } from "react-router";
 import { FiPlus, FiUser } from "react-icons/fi";
 import BrandLogo from "@/components/ui/BrandLogo.jsx";
 
@@ -9,6 +9,10 @@ const navigationItems = [
 ];
 
 function Navbar({ isLoggedIn }) {
+  const location = useLocation();
+  const currentPath = location.pathname.replace(/\/+$/, "") || "/";
+  const showCreateLink = isLoggedIn && currentPath === "/admin";
+
   return (
     <header className="border-b border-slate-200 bg-white">
       <div className="mx-auto flex min-h-16 w-full items-center justify-between gap-5 px-5 sm:px-7 lg:px-8">
@@ -46,13 +50,15 @@ function Navbar({ isLoggedIn }) {
         <div className="flex shrink-0 items-center gap-3">
           {isLoggedIn ? (
             <>
-              <a
-                href="#"
-                className="hidden h-10 items-center justify-center gap-2 rounded-lg bg-blue-700 px-4 text-sm font-bold text-white shadow-[0_8px_18px_rgba(37,99,235,0.24)] transition hover:bg-blue-800 focus:ring-4 focus:ring-blue-100 focus:outline-none sm:inline-flex"
-              >
-                <FiPlus className="text-lg" aria-hidden="true" />
-                Create New Link
-              </a>
+              {showCreateLink && (
+                <NavLink
+                  to="/admin/create"
+                  className="hidden h-10 items-center justify-center gap-2 rounded-lg bg-blue-700 px-4 text-sm font-bold text-white shadow-[0_8px_18px_rgba(37,99,235,0.24)] transition hover:bg-blue-800 focus:ring-4 focus:ring-blue-100 focus:outline-none sm:inline-flex"
+                >
+                  <FiPlus className="text-lg" aria-hidden="true" />
+                  Create New Link
+                </NavLink>
+              )}
               <NavLink
                 to="/admin/profile"
                 className="grid size-9 place-items-center rounded-full border border-slate-200 bg-teal-700 text-white shadow-sm transition hover:bg-teal-800 focus:ring-4 focus:ring-blue-100 focus:outline-none"
