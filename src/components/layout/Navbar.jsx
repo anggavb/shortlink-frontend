@@ -1,5 +1,8 @@
-import { NavLink, useLocation } from "react-router";
+import { NavLink, useLocation, useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
 import { FiPlus, FiUser } from "react-icons/fi";
+import { logoutUser } from "@/redux/auth/authSlice";
+import { notify } from "@/utils/toast";
 import BrandLogo from "@/components/ui/BrandLogo.jsx";
 
 const navigationItems = [
@@ -9,9 +12,22 @@ const navigationItems = [
 ];
 
 function Navbar({ isLoggedIn }) {
+  const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname.replace(/\/+$/, "") || "/";
   const showCreateLink = isLoggedIn && currentPath === "/admin";
+
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      notify.success("Logout berhasil.");
+    } catch (error) {
+      notify.warning(error?.message || "Session cleared locally.");
+    } finally {
+      navigate("/auth");
+    }
+  };
 
   return (
     <header className="border-b border-slate-200 bg-white">
@@ -66,12 +82,13 @@ function Navbar({ isLoggedIn }) {
               >
                 <FiUser className="text-lg" aria-hidden="true" />
               </NavLink>
-              <a
-                href="#"
+              <button
+                type="button"
+                onClick={handleLogout}
                 className="hidden text-sm font-medium text-slate-500 transition hover:text-slate-900 sm:inline-flex"
               >
                 Logout
-              </a>
+              </button>
             </>
           ) : (
             <>

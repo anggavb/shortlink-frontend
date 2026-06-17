@@ -1,16 +1,23 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import { FcGoogle } from "react-icons/fc";
-import AuthCard from "../../components/auth/AuthCard.jsx";
-import AuthLayout from "../../components/auth/AuthLayout.jsx";
-import Button from "../../components/ui/Button.jsx";
-import FormField from "../../components/ui/FormField.jsx";
+import { loginUser } from "@/redux/auth/authSlice";
+import { notify } from "@/utils/toast";
+import AuthCard from "@/components/auth/AuthCard.jsx";
+import AuthLayout from "@/components/auth/AuthLayout.jsx";
+import Button from "@/components/ui/Button.jsx";
+import FormField from "@/components/ui/FormField.jsx";
 
 function LoginPage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isLoggingIn = useSelector((state) => state.auth.loginStatus === "loading");
   const {
     formState: { errors },
     handleSubmit,
     register,
+    setError,
   } = useForm({
     defaultValues: {
       email: "",
@@ -18,8 +25,28 @@ function LoginPage() {
     },
   });
 
-  const onSubmit = (values) => {
-    console.log("Login payload", values);
+  const onSubmit = async (values) => {
+    try {
+      const response = await dispatch(loginUser(values)).unwrap();
+      notify.success(response?.message || "Login berhasil.");
+      navigate("/admin");
+    } catch (error) {
+      if (error?.errors?.email) {
+        setError("email", {
+          type: "server",
+          message: error.errors.email,
+        });
+      }
+
+      if (error?.errors?.password) {
+        setError("password", {
+          type: "server",
+          message: error.errors.password,
+        });
+      }
+
+      notify.error(error?.message || "Login failed. Please try again.");
+    }
   };
 
   return (
@@ -85,9 +112,11 @@ function LoginPage() {
 
           <Button
             type="submit"
+            disabled={isLoggingIn}
             className="mt-1 shadow-[0_10px_18px_rgba(37,99,235,0.22)]"
           >
-            Log In <span aria-hidden="true">&rarr;</span>
+            {isLoggingIn ? "Logging In..." : "Log In"}{" "}
+            <span aria-hidden="true">&rarr;</span>
           </Button>
         </form>
 
