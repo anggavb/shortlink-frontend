@@ -1,17 +1,17 @@
-import { FaLink } from "react-icons/fa6";
 import { useNavigate } from "react-router";
 
 function BrandLogo({ className = "", label = "ShortLink" }) {
   const navigate = useNavigate();
 
   return (
-    <div
+    <button
+      type="button"
       onClick={() => navigate("/")}
-      className={`inline-flex h-6 min-w-12 items-center justify-center rounded-full bg-blue-100 px-3 text-blue-700 hover:cursor-pointer ${className}`.trim()}
+      className={`text-center text-2xl font-extrabold tracking-normal text-[#1c1f24] transition hover:cursor-pointer hover:text-blue-700 focus:ring-4 focus:ring-blue-100 focus:outline-none ${className}`.trim()}
       aria-label={label}
     >
-      <FaLink />
-    </div>
+      {label}
+    </button>
   );
 }
 

@@ -100,7 +100,7 @@ function RegisterPage() {
 
       <p className="mt-9 text-center text-sm text-slate-600">
         Already have an account?{" "}
-        <Link className="text-link" to="/auth/login">
+        <Link className="text-link" to="/auth">
           Log in
         </Link>
       </p>
