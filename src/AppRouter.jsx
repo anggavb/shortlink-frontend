@@ -6,6 +6,7 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute.jsx";
 import DashboardPage from "@/pages/admin/DashboardPage.jsx";
 import ProfilePage from "@/pages/admin/ProfilePage.jsx";
 import CreateLinkPage from "@/pages/admin/CreateLinkPage.jsx";
+import NotFoundPage from "@/pages/NotFoundPage.jsx";
 
 function AppRouter() {
   return (
@@ -20,6 +21,7 @@ function AppRouter() {
         <Route path="create" element={<CreateLinkPage />} />
         <Route path="profile" element={<ProfilePage />} />
       </Route>
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
