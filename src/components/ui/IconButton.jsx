@@ -1,4 +1,4 @@
-function IconButton({ children, label, variant = "filled" }) {
+function IconButton({ children, label, variant = "filled", ...props }) {
   return (
     <button
       type="button"
@@ -9,6 +9,7 @@ function IconButton({ children, label, variant = "filled" }) {
           : "text-slate-500 hover:bg-slate-100 hover:text-slate-700",
       ].join(" ")}
       aria-label={label}
+      {...props}
     >
       {children}
     </button>

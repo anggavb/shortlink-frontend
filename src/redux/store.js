@@ -12,6 +12,7 @@ import {
 import storage from "redux-persist/es/storage";
 import env from "@/utils/env";
 import authReducer from "@/redux/auth/authSlice";
+import linksReducer from "@/redux/links/linksSlice";
 
 const authPersistConfig = {
   key: "auth",
@@ -21,6 +22,7 @@ const authPersistConfig = {
 
 const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
+  links: linksReducer,
 });
 
 const store = configureStore({
