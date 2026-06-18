@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router";
+import { useMemo } from "react";
+import { Link, useNavigate } from "react-router";
+import { useForm, useWatch } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import {
   FiActivity,
   FiArrowLeft,
@@ -10,17 +12,89 @@ import {
 } from "react-icons/fi";
 import Navbar from "@/components/layout/Navbar.jsx";
 import AppFooter from "@/components/layout/AppFooter.jsx";
+import {
+  clearCreateLinkState,
+  createLink,
+  selectCreateLinkStatus,
+} from "@/redux/links/linksSlice";
+import { notify } from "@/utils/toast";
+
+const slugPattern = /^[A-Za-z0-9-]+$/;
 
 function CreateLinkPage() {
-  const [slug, setSlug] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const createStatus = useSelector(selectCreateLinkStatus);
+  const isCreating = createStatus === "loading";
+  const {
+    formState: { errors },
+    handleSubmit,
+    control,
+    register,
+    setError,
+  } = useForm({
+    defaultValues: {
+      originalUrl: "",
+      slug: "",
+    },
+  });
+
+  const slug = useWatch({
+    control,
+    name: "slug",
+  });
 
   const previewSlug = useMemo(() => {
     return slug.trim() || "my-custom-slug";
   }, [slug]);
 
-  function handleSubmit(event) {
-    event.preventDefault();
-  }
+  const onSubmit = async ({ originalUrl, slug }) => {
+    const trimmedSlug = slug.trim();
+    const payload = {
+      original_url: originalUrl.trim(),
+    };
+
+    if (trimmedSlug) {
+      payload.slug = trimmedSlug;
+    }
+
+    try {
+      const response = await dispatch(createLink(payload)).unwrap();
+      notify.success(response?.message || "Link created successfully.");
+      dispatch(clearCreateLinkState());
+      navigate("/admin");
+    } catch (error) {
+      if (error?.errors?.OriginalURL || error?.errors?.original_url) {
+        setError("originalUrl", {
+          type: "server",
+          message: error.errors.OriginalURL || error.errors.original_url,
+        });
+      }
+
+      if (error?.errors?.Slug || error?.errors?.slug) {
+        setError("slug", {
+          type: "server",
+          message: error.errors.Slug || error.errors.slug,
+        });
+      }
+
+      if (error?.message === "Slug Already Used") {
+        setError("slug", {
+          type: "server",
+          message: "Slug already used.",
+        });
+      }
+
+      if (error?.message === "Original URL Already Used") {
+        setError("originalUrl", {
+          type: "server",
+          message: "Original URL already used.",
+        });
+      }
+
+      notify.error(error?.message || "Unable to create link.");
+    }
+  };
 
   return (
     <div className="flex min-h-svh flex-col bg-slate-50 text-slate-900">
@@ -47,7 +121,8 @@ function CreateLinkPage() {
 
           <form
             className="mt-8 rounded-lg border border-slate-200 bg-white px-6 py-9 shadow-sm sm:px-8"
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
           >
             <div>
               <label
@@ -64,14 +139,35 @@ function CreateLinkPage() {
                 <input
                   id="destination-url"
                   type="url"
-                  required
                   placeholder="https://example.com/your-long-url-here"
+                  aria-invalid={errors.originalUrl ? "true" : "false"}
+                  aria-describedby={
+                    errors.originalUrl
+                      ? "destination-url-error"
+                      : "destination-url-helper"
+                  }
                   className="min-w-0 flex-1 bg-transparent text-base text-slate-900 outline-none placeholder:text-slate-400"
+                  {...register("originalUrl", {
+                    required: "Destination URL is required.",
+                    pattern: {
+                      value: /^https?:\/\/.+/i,
+                      message: "URL must start with http:// or https://.",
+                    },
+                  })}
                 />
               </div>
-              <p className="mt-2 text-[0.6875rem] leading-5 font-medium text-slate-500 italic">
-                Ensure your URL starts with http:// or https://
-              </p>
+              {errors.originalUrl ? (
+                <p id="destination-url-error" className="form-error mt-2">
+                  {errors.originalUrl.message}
+                </p>
+              ) : (
+                <p
+                  id="destination-url-helper"
+                  className="mt-2 text-[0.6875rem] leading-5 font-medium text-slate-500 italic"
+                >
+                  Ensure your URL starts with http:// or https://
+                </p>
+              )}
             </div>
 
             <div className="mt-7">
@@ -88,15 +184,41 @@ function CreateLinkPage() {
                 <input
                   id="custom-slug"
                   type="text"
-                  value={slug}
-                  onChange={(event) => setSlug(event.target.value)}
                   placeholder="my-custom-slug"
+                  aria-invalid={errors.slug ? "true" : "false"}
+                  aria-describedby={
+                    errors.slug ? "custom-slug-error" : "custom-slug-helper"
+                  }
                   className="min-w-0 flex-1 px-4 text-base text-slate-900 outline-none placeholder:text-slate-400"
+                  {...register("slug", {
+                    minLength: {
+                      value: 3,
+                      message: "Slug must be at least 3 characters.",
+                    },
+                    maxLength: {
+                      value: 50,
+                      message: "Slug must be at most 50 characters.",
+                    },
+                    pattern: {
+                      value: slugPattern,
+                      message:
+                        "Slug can only contain letters, numbers, and hyphens.",
+                    },
+                  })}
                 />
               </div>
-              <p className="mt-2 text-[0.6875rem] leading-5 font-medium text-slate-500 italic">
-                Leave blank to generate a random unique identifier.
-              </p>
+              {errors.slug ? (
+                <p id="custom-slug-error" className="form-error mt-2">
+                  {errors.slug.message}
+                </p>
+              ) : (
+                <p
+                  id="custom-slug-helper"
+                  className="mt-2 text-[0.6875rem] leading-5 font-medium text-slate-500 italic"
+                >
+                  Leave blank to generate a random unique identifier.
+                </p>
+              )}
             </div>
 
             <div className="mt-7 rounded-lg border border-blue-200 bg-blue-50 px-4 py-4">
@@ -115,9 +237,10 @@ function CreateLinkPage() {
             <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-7">
               <button
                 type="submit"
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-blue-700 px-7 text-base font-bold text-white shadow-[0_10px_20px_rgba(37,99,235,0.28)] transition hover:bg-blue-800 focus:ring-4 focus:ring-blue-100 focus:outline-none sm:w-auto"
+                disabled={isCreating}
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-blue-700 px-7 text-base font-bold text-white shadow-[0_10px_20px_rgba(37,99,235,0.28)] transition hover:bg-blue-800 focus:ring-4 focus:ring-blue-100 focus:outline-none disabled:cursor-not-allowed disabled:bg-blue-300 disabled:shadow-none sm:w-auto"
               >
-                Create Link
+                {isCreating ? "Creating..." : "Create Link"}
                 <FiZap aria-hidden="true" />
               </button>
               <Link

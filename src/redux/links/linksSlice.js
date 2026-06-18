@@ -13,6 +13,10 @@ const initialState = {
   fetchError: null,
   deleteStatus: "idle",
   deleteError: null,
+  createStatus: "idle",
+  createError: null,
+  createFieldErrors: null,
+  createdLink: null,
 };
 
 function normalizeLinksError(error, fallbackMessage) {
@@ -46,6 +50,19 @@ export const fetchLinks = createAsyncThunk(
   },
 );
 
+export const createLink = createAsyncThunk(
+  "links/createLink",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await api.post("/links", payload);
+    } catch (error) {
+      return rejectWithValue(
+        normalizeLinksError(error, "Unable to create link. Please try again."),
+      );
+    }
+  },
+);
+
 export const deleteLink = createAsyncThunk(
   "links/deleteLink",
   async (id, { rejectWithValue }) => {
@@ -67,6 +84,14 @@ const linksSlice = createSlice({
     clearLinksError(state) {
       state.fetchError = null;
       state.deleteError = null;
+      state.createError = null;
+      state.createFieldErrors = null;
+    },
+    clearCreateLinkState(state) {
+      state.createStatus = "idle";
+      state.createError = null;
+      state.createFieldErrors = null;
+      state.createdLink = null;
     },
   },
   extraReducers: (builder) => {
@@ -90,6 +115,23 @@ const linksSlice = createSlice({
         state.fetchStatus = "failed";
         state.fetchError = action.payload?.message || action.error.message;
       })
+      .addCase(createLink.pending, (state) => {
+        state.createStatus = "loading";
+        state.createError = null;
+        state.createFieldErrors = null;
+        state.createdLink = null;
+      })
+      .addCase(createLink.fulfilled, (state, action) => {
+        state.createStatus = "succeeded";
+        state.createError = null;
+        state.createFieldErrors = null;
+        state.createdLink = action.payload?.results || null;
+      })
+      .addCase(createLink.rejected, (state, action) => {
+        state.createStatus = "failed";
+        state.createError = action.payload?.message || action.error.message;
+        state.createFieldErrors = action.payload?.errors || null;
+      })
       .addCase(deleteLink.pending, (state) => {
         state.deleteStatus = "loading";
         state.deleteError = null;
@@ -105,7 +147,7 @@ const linksSlice = createSlice({
   },
 });
 
-export const { clearLinksError } = linksSlice.actions;
+export const { clearCreateLinkState, clearLinksError } = linksSlice.actions;
 
 export const selectLinks = (state) => state.links.items;
 export const selectLinksMeta = (state) => state.links.meta;
@@ -113,5 +155,10 @@ export const selectLinksFetchStatus = (state) => state.links.fetchStatus;
 export const selectLinksFetchError = (state) => state.links.fetchError;
 export const selectLinksDeleteStatus = (state) => state.links.deleteStatus;
 export const selectLinksDeleteError = (state) => state.links.deleteError;
+export const selectCreateLinkStatus = (state) => state.links.createStatus;
+export const selectCreateLinkError = (state) => state.links.createError;
+export const selectCreateLinkFieldErrors = (state) =>
+  state.links.createFieldErrors;
+export const selectCreatedLink = (state) => state.links.createdLink;
 
 export default linksSlice.reducer;
