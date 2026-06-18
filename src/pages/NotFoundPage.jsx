@@ -41,15 +41,15 @@ function NotFoundPage() {
             <div className="absolute inset-4 grid place-items-center rounded-full bg-slate-100 text-5xl font-extrabold text-slate-300">
               <span className="relative inline-block">
                 <FiLink aria-hidden="true" />
-                <span className="absolute left-1/2 top-1/2 h-1.5 w-16 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full bg-slate-300" />
+                <span className="absolute top-1/2 left-1/2 h-1.5 w-16 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full bg-slate-300" />
               </span>
             </div>
-            <div className="absolute right-2 top-1 grid size-10 -rotate-[-12deg] place-items-center rounded-lg bg-blue-600 text-white shadow-[0_14px_28px_rgba(37,99,235,0.26)]">
+            <div className="absolute top-1 right-2 grid size-10 rotate-12 place-items-center rounded-lg bg-blue-600 text-white shadow-[0_14px_28px_rgba(37,99,235,0.26)]">
               <FiAlertTriangle className="text-lg" aria-hidden="true" />
             </div>
           </div>
 
-          <p className="text-4xl font-extrabold leading-none text-blue-700">
+          <p className="text-4xl leading-none font-extrabold text-blue-700">
             404
           </p>
           <h1 className="mt-5 text-2xl font-extrabold tracking-normal text-[#20242a]">
@@ -85,10 +85,7 @@ function NotFoundPage() {
                   key={item.title}
                   className="min-h-40 rounded-lg border border-slate-100 bg-white px-6 py-7 text-left shadow-sm"
                 >
-                  <Icon
-                    className="text-2xl text-blue-700"
-                    aria-hidden="true"
-                  />
+                  <Icon className="text-2xl text-blue-700" aria-hidden="true" />
                   <h2 className="mt-5 text-base font-extrabold text-[#20242a]">
                     {item.title}
                   </h2>
