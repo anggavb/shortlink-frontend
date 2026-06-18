@@ -14,6 +14,7 @@ import {
   selectLinksFetchStatus,
   selectLinksMeta,
 } from "@/redux/links/linksSlice";
+import { alertDialog } from "@/utils/sweetAlert";
 import { notify } from "@/utils/toast";
 
 const PAGE_LIMIT = 10;
@@ -71,6 +72,17 @@ function DashboardPage() {
   }
 
   async function handleDelete(id) {
+    const result = await alertDialog.confirm({
+      title: "Delete this link?",
+      text: "This action will remove the short link from your dashboard.",
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
     const action = await dispatch(deleteLink(id));
 
     if (deleteLink.fulfilled.match(action)) {
