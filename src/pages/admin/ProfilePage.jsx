@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   FiBell,
   FiEdit2,
@@ -7,10 +8,34 @@ import {
   FiShield,
   FiUser,
 } from "react-icons/fi";
+import { useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser } from "@/redux/auth/authSlice";
+import { fetchLinks, selectLinksMeta } from "@/redux/links/linksSlice";
+import { notify } from "@/utils/toast";
+
 import Navbar from "@/components/layout/Navbar.jsx";
 import AppFooter from "@/components/layout/AppFooter.jsx";
 
 function ProfilePage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const linksMeta = useSelector(selectLinksMeta);
+
+  useEffect(() => {
+    dispatch(fetchLinks({ page: 1, limit: 1 }));
+  }, [dispatch]);
+
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      notify.success("Logout berhasil.");
+    } catch (error) {
+      notify.warning(error?.message || "Session cleared locally.");
+    } finally {
+      navigate("/auth");
+    }
+  };
   return (
     <div className="flex min-h-svh flex-col bg-slate-50 text-slate-900">
       <Navbar />
@@ -76,12 +101,12 @@ function ProfilePage() {
                     Active Assets
                   </p>
                   <p className="mt-1 text-2xl leading-none font-extrabold">
-                    12
+                    {linksMeta.total}
                   </p>
                 </div>
               </div>
               <a
-                href="#"
+                href="/admin"
                 className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-white/25 bg-white/10 px-4 text-xs font-extrabold tracking-[0.14em] text-white uppercase transition hover:bg-white/15 focus:ring-4 focus:ring-white/20 focus:outline-none sm:w-auto"
               >
                 View Links
@@ -110,6 +135,7 @@ function ProfilePage() {
               <button
                 type="button"
                 className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-600 transition hover:border-slate-300 hover:bg-white hover:text-slate-900 focus:ring-4 focus:ring-blue-100 focus:outline-none"
+                onClick={handleLogout}
               >
                 <FiLogOut aria-hidden="true" />
                 Logout Session
