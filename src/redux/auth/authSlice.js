@@ -111,8 +111,8 @@ const authSlice = createSlice({
         state.loginStatus = "succeeded";
         state.loginError = null;
         state.loginFieldErrors = null;
-        state.token = action.payload?.data?.token || null;
-        state.expiresAt = action.payload?.data?.expires_at || null;
+        state.token = action.payload?.results?.token || null;
+        state.expiresAt = action.payload?.results?.expires_at || null;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loginStatus = "failed";
